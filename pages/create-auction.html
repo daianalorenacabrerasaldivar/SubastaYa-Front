@@ -8,13 +8,149 @@
   <link rel="stylesheet" href="../styles/global.css">
   <link rel="stylesheet" href="../styles/components.css">
   <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/create-auction.css">
 </head>
 <body>
+
   <div id="app-header"></div>
+
   <main class="page-content">
-    <p class="estado-carga">Cargando formulario… (T3)</p>
+
+    <div class="publicar-header">
+      <h1>Publicar subasta</h1>
+      <p>Completá los datos y tu artículo aparecerá en el catálogo.</p>
+    </div>
+
+    <div class="publicar-layout">
+
+      <!-- Formulario -->
+      <div>
+
+        <form id="form-publicar" novalidate>
+
+          <!-- Sección: Tu cuenta -->
+          <div class="form-card">
+            <h2>Tu cuenta</h2>
+            <div class="form-group">
+              <label class="form-label" for="input-vendedor">Tu ID de usuario</label>
+              <input id="input-vendedor" type="number" min="1" class="form-control"
+                     placeholder="Ej: 3" required>
+              <span class="form-hint">Ingresá el ID con el que estás registrado.</span>
+            </div>
+          </div>
+
+          <!-- Sección: Artículo -->
+          <div class="form-card">
+            <h2>Artículo</h2>
+
+            <div class="form-group">
+              <label class="form-label" for="input-titulo">Título <span class="form-required">*</span></label>
+              <input id="input-titulo" type="text" maxlength="120" class="form-control"
+                     placeholder="Ej: iPhone 14 Pro 128 GB — Impecable" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="input-categoria">Categoría <span class="form-required">*</span></label>
+              <select id="input-categoria" class="form-control" required>
+                <option value="">Seleccioná una categoría…</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="input-descripcion">Descripción</label>
+              <textarea id="input-descripcion" rows="4" maxlength="1000" class="form-control"
+                        placeholder="Describí el estado, características, lo que incluye…"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="input-imagen">URL de imagen</label>
+              <input id="input-imagen" type="url" class="form-control"
+                     placeholder="https://ejemplo.com/foto.jpg">
+              <span class="form-hint">Pegá un enlace directo a la imagen del artículo.</span>
+            </div>
+          </div>
+
+          <!-- Sección: Precios -->
+          <div class="form-card">
+            <h2>Precios</h2>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="input-base">Precio base ($) <span class="form-required">*</span></label>
+                <input id="input-base" type="number" min="1" step="1" class="form-control"
+                       placeholder="Ej: 5000" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="input-incremento">Incremento mínimo ($) <span class="form-required">*</span></label>
+                <input id="input-incremento" type="number" min="1" step="1" class="form-control"
+                       placeholder="Ej: 500" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sección: Fechas -->
+          <div class="form-card">
+            <h2>Duración</h2>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="input-inicio">Fecha de inicio <span class="form-required">*</span></label>
+                <input id="input-inicio" type="datetime-local" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="input-fin">Fecha de fin <span class="form-required">*</span></label>
+                <input id="input-fin" type="datetime-local" class="form-control" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alerta y botones -->
+          <div id="alerta-form"></div>
+
+          <div class="publicar-actions">
+            <button id="btn-publicar" type="submit" class="btn btn-primary">
+              Publicar subasta
+            </button>
+            <a href="../index.html" class="btn btn-secondary">Cancelar</a>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- Preview -->
+      <aside class="preview-sticky">
+        <p class="preview-card__label" style="padding:0; font-size:var(--font-size-sm); font-weight:600; color:var(--color-text-muted); text-transform:uppercase; letter-spacing:.06em">
+          Vista previa
+        </p>
+        <div class="preview-card">
+          <div class="preview-img-wrap">
+            <img id="preview-img" src="" alt="" hidden>
+            <span id="preview-img-fallback">🏷️</span>
+          </div>
+          <div class="preview-body">
+            <p id="preview-categoria" class="preview-categoria">Categoría</p>
+            <p id="preview-titulo" class="preview-titulo">Título del artículo</p>
+            <div class="preview-precios">
+              <div>
+                <p class="preview-precio-label">Precio base</p>
+                <p id="preview-base" class="preview-precio-valor">$0</p>
+              </div>
+              <div>
+                <p class="preview-precio-label">Incremento</p>
+                <p id="preview-incremento" class="preview-precio-valor">$0</p>
+              </div>
+            </div>
+            <p id="preview-fecha" class="preview-fecha"></p>
+          </div>
+        </div>
+      </aside>
+
+    </div><!-- /publicar-layout -->
+
   </main>
+
   <div id="app-footer"></div>
+
   <script src="../components/layout.js" type="module"></script>
+  <script src="../scripts/create-auction.js" type="module"></script>
+
 </body>
 </html>

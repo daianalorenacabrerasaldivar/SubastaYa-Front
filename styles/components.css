@@ -83,9 +83,34 @@ input::placeholder { color: var(--color-text-light); }
 
 textarea { resize: vertical; min-height: 100px; }
 
+.form-label {
+  font-size:   var(--font-size-sm);
+  font-weight: 600;
+  color:       var(--color-text);
+}
+.form-hint {
+  font-size: var(--font-size-sm);
+  color:     var(--color-text-muted);
+}
+.form-required { color: var(--color-error); }
 .form-error {
   font-size: var(--font-size-sm);
   color:     var(--color-error);
+}
+.form-control {
+  width:         100%;
+  padding:       10px 12px;
+  border:        1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-family:   var(--font-sans);
+  font-size:     var(--font-size-base);
+  color:         var(--color-text);
+  background:    var(--color-surface);
+  transition:    border-color .15s;
+}
+.form-control:focus {
+  outline:      none;
+  border-color: var(--color-primary);
 }
 
 /* ── Badges / pills ──────────────────────────────────── */

@@ -8,13 +8,129 @@
   <link rel="stylesheet" href="../styles/global.css">
   <link rel="stylesheet" href="../styles/components.css">
   <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/auction-detail.css">
 </head>
 <body>
+
   <div id="app-header"></div>
+
   <main class="page-content">
-    <p class="estado-carga">Cargando subasta… (T2)</p>
+
+    <!-- Spinner inicial -->
+    <div id="estado-carga" class="estado-carga">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- Contenido principal (oculto hasta que carga) -->
+    <div id="auction-content" hidden>
+
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb" aria-label="Navegación">
+        <a href="../index.html">Inicio</a>
+        <span class="breadcrumb__sep">›</span>
+        <span id="breadcrumb-titulo">Subasta</span>
+      </nav>
+
+      <!-- Grid: imagen izquierda, panel derecho -->
+      <div class="detalle-grid">
+
+        <!-- Imagen -->
+        <div class="detalle-imagen">
+          <img id="img-subasta" src="" alt="">
+          <div id="img-fallback" class="detalle-imagen__fallback" hidden>🏷️</div>
+        </div>
+
+        <!-- Panel de info + acciones -->
+        <div class="detalle-panel">
+
+          <!-- Badges -->
+          <div class="detalle-badges">
+            <span id="badge-categoria" class="detalle-categoria"></span>
+            <span id="badge-estado" class="badge"></span>
+          </div>
+
+          <!-- Título y vendedor -->
+          <h1 id="titulo-subasta" class="detalle-titulo"></h1>
+          <p id="vendedor-info" class="detalle-vendedor"></p>
+          <p id="precio-base-info" class="detalle-vendedor" style="margin-top:-8px"></p>
+
+          <!-- Precios -->
+          <div class="precio-box">
+            <div>
+              <p class="precio-label">Oferta actual</p>
+              <p id="oferta-actual" class="precio-valor sin-ofertas">Sin ofertas</p>
+            </div>
+            <div>
+              <p class="precio-label">Pujas</p>
+              <p id="cantidad-pujas" class="precio-valor">0</p>
+            </div>
+          </div>
+
+          <!-- Próxima puja mínima (solo ACTIVA) -->
+          <div id="proxima-puja-wrap" hidden>
+            <p class="precio-label" style="margin-bottom:4px">Próxima puja mínima</p>
+            <p id="proxima-puja" class="precio-minima"></p>
+          </div>
+
+          <!-- Timer -->
+          <div id="timer-box" class="timer-box" hidden>
+            <span class="timer-icono">⏱</span>
+            <div>
+              <p id="timer-valor-grande" class="timer-valor-grande">--:--:--</p>
+              <p id="timer-subtexto" class="timer-subtexto">restantes</p>
+            </div>
+          </div>
+
+          <!-- Formulario de puja (solo ACTIVA) -->
+          <form id="form-puja" class="form-puja" hidden onsubmit="return false">
+            <h3>Hacer una puja</h3>
+            <div class="form-group">
+              <label class="form-label" for="input-comprador">Tu ID de usuario</label>
+              <input id="input-comprador" type="number" min="1" class="form-control"
+                     placeholder="Ej: 5" required>
+            </div>
+            <div class="puja-row">
+              <input id="input-monto" type="number" min="1" step="1" class="form-control"
+                     placeholder="Monto" required>
+              <button id="btn-pujar" type="button" class="btn btn-primary">Pujar →</button>
+            </div>
+            <div id="alerta-puja"></div>
+          </form>
+
+          <!-- Estado finalizado / desierto -->
+          <div id="estado-finalizado" class="estado-finalizado" hidden>
+            <p id="fin-estado"></p>
+            <p id="fin-ganador" class="ganador"></p>
+          </div>
+
+        </div><!-- /detalle-panel -->
+      </div><!-- /detalle-grid -->
+
+      <!-- Sección inferior: descripción + historial -->
+      <div class="detalle-bottom">
+
+        <section class="detalle-descripcion">
+          <h2>Descripción</h2>
+          <p id="descripcion-subasta"></p>
+        </section>
+
+        <section class="detalle-historial">
+          <h2>Historial de pujas</h2>
+          <div id="historial-lista" class="historial-lista">
+            <p class="historial-vacio">Todavía no hay pujas.</p>
+          </div>
+        </section>
+
+      </div><!-- /detalle-bottom -->
+
+    </div><!-- /auction-content -->
+
   </main>
+
   <div id="app-footer"></div>
+
   <script src="../components/layout.js" type="module"></script>
+  <script src="../scripts/auction-detail.js" type="module"></script>
+
 </body>
 </html>

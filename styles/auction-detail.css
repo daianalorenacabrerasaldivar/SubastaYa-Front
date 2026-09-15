@@ -1,0 +1,259 @@
+/* ════════════════════════════════════════════════════
+   auction-detail.css — Sala de subasta (T2)
+   ════════════════════════════════════════════════════ */
+
+/* ── Breadcrumb ───────────────────────────────────────── */
+.breadcrumb {
+  display:     flex;
+  align-items: center;
+  gap:         8px;
+  font-size:   var(--font-size-sm);
+  color:       var(--color-text-muted);
+  margin-bottom: 24px;
+}
+.breadcrumb a { color: var(--color-text-muted); }
+.breadcrumb a:hover { color: var(--color-primary); text-decoration: none; }
+.breadcrumb__sep { color: var(--color-border); }
+
+/* ── Grid principal (imagen + panel) ──────────────────── */
+.detalle-grid {
+  display:   grid;
+  grid-template-columns: 1fr 420px;
+  gap:       32px;
+  align-items: start;
+  margin-bottom: 40px;
+}
+
+/* ── Imagen ───────────────────────────────────────────── */
+.detalle-imagen {
+  position:      sticky;
+  top:           calc(var(--header-height) + 20px);
+  border-radius: var(--radius-lg);
+  overflow:      hidden;
+  aspect-ratio:  4/3;
+  background:    var(--color-surface-2);
+}
+.detalle-imagen img {
+  width:      100%;
+  height:     100%;
+  object-fit: cover;
+}
+.detalle-imagen__fallback {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  width:  100%;
+  height: 100%;
+  font-size: 80px;
+}
+
+/* ── Panel derecho ────────────────────────────────────── */
+.detalle-panel {
+  display:        flex;
+  flex-direction: column;
+  gap:            20px;
+}
+
+.detalle-badges {
+  display:    flex;
+  align-items: center;
+  gap:        8px;
+  flex-wrap:  wrap;
+}
+.detalle-categoria {
+  font-size:   var(--font-size-sm);
+  font-weight: 600;
+  color:       var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.detalle-titulo {
+  font-size:   clamp(20px, 3vw, 28px);
+  font-weight: 700;
+  line-height: 1.2;
+  color:       var(--color-text);
+  text-wrap:   balance;
+}
+.detalle-vendedor {
+  font-size: var(--font-size-sm);
+  color:     var(--color-text-muted);
+}
+
+/* ── Caja de precios ──────────────────────────────────── */
+.precio-box {
+  background:    var(--color-surface);
+  border:        1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding:       20px;
+  display:       grid;
+  grid-template-columns: 1fr 1fr;
+  gap:           16px;
+}
+.precio-label {
+  font-size:      var(--font-size-sm);
+  color:          var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom:  4px;
+}
+.precio-valor {
+  font-size:            28px;
+  font-weight:          700;
+  color:                var(--color-text);
+  font-variant-numeric: tabular-nums;
+  line-height:          1;
+}
+.precio-valor.sin-ofertas {
+  font-size:   var(--font-size-base);
+  font-weight: 400;
+  color:       var(--color-text-muted);
+}
+.precio-minima {
+  font-size:            var(--font-size-lg);
+  font-weight:          600;
+  color:                var(--color-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Timer ────────────────────────────────────────────── */
+.timer-box {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  gap:             10px;
+  background:      var(--color-surface);
+  border:          1px solid var(--color-border);
+  border-radius:   var(--radius-lg);
+  padding:         16px 20px;
+}
+.timer-icono { font-size: 20px; }
+.timer-valor-grande {
+  font-size:            36px;
+  font-weight:          700;
+  font-variant-numeric: tabular-nums;
+  color:                var(--color-text);
+  letter-spacing:       .04em;
+}
+.timer-valor-grande.urgente { color: var(--color-error); }
+.timer-subtexto {
+  font-size: var(--font-size-sm);
+  color:     var(--color-text-muted);
+}
+
+/* ── Formulario de puja ───────────────────────────────── */
+.form-puja {
+  background:    var(--color-surface);
+  border:        1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding:       20px;
+  display:       flex;
+  flex-direction: column;
+  gap:           12px;
+}
+.form-puja h3 {
+  font-size:   var(--font-size-base);
+  font-weight: 600;
+  color:       var(--color-text);
+}
+.puja-row {
+  display: flex;
+  gap:     8px;
+}
+.puja-row input { flex: 1; }
+
+/* ── Toast de extensión anti-sniping ─────────────────── */
+.toast {
+  position:      fixed;
+  bottom:        24px;
+  left:          50%;
+  transform:     translateX(-50%);
+  background:    #1E3A5F;
+  color:         #fff;
+  padding:       12px 24px;
+  border-radius: var(--radius-full);
+  font-size:     var(--font-size-sm);
+  font-weight:   600;
+  box-shadow:    var(--shadow-lg);
+  z-index:       200;
+  white-space:   nowrap;
+  animation:     toast-in .3s ease;
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0);    }
+}
+
+/* ── Estado finalizado ────────────────────────────────── */
+.estado-finalizado {
+  background:    var(--color-surface);
+  border:        1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding:       20px;
+  text-align:    center;
+  color:         var(--color-text-muted);
+}
+.estado-finalizado .ganador {
+  font-size:   var(--font-size-lg);
+  font-weight: 700;
+  color:       var(--color-success);
+  margin-top:  8px;
+}
+
+/* ── Sección inferior (descripción + historial) ───────── */
+.detalle-bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap:     32px;
+}
+.detalle-bottom h2 {
+  font-size:     var(--font-size-base);
+  font-weight:   600;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-border);
+}
+.detalle-descripcion p {
+  color:       var(--color-text-muted);
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+/* ── Historial de pujas ───────────────────────────────── */
+.historial-lista {
+  display:        flex;
+  flex-direction: column;
+  gap:            1px;
+}
+.puja-item {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  padding:         10px 0;
+  border-bottom:   1px solid var(--color-border);
+  font-size:       var(--font-size-sm);
+}
+.puja-item:last-child { border-bottom: none; }
+.puja-monto {
+  font-weight:          700;
+  font-variant-numeric: tabular-nums;
+  color:                var(--color-text);
+}
+.puja-item.primera .puja-monto { color: var(--color-primary); }
+.puja-postor { color: var(--color-text-muted); }
+.puja-fecha  { color: var(--color-text-light); font-size: 11px; }
+.historial-vacio {
+  color:     var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  padding:   16px 0;
+}
+
+/* ── Responsive ───────────────────────────────────────── */
+@media (max-width: 860px) {
+  .detalle-grid   { grid-template-columns: 1fr; }
+  .detalle-imagen { position: static; aspect-ratio: 16/9; }
+  .detalle-bottom { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .precio-box { grid-template-columns: 1fr; }
+  .puja-row   { flex-direction: column; }
+}

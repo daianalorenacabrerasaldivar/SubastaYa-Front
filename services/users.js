@@ -5,7 +5,7 @@ import { api } from './api.js';
  * @param {number} vendedorId
  */
 export function getAuctionsByVendedor(vendedorId) {
-  return api.get(`/auctions?vendedorId=${vendedorId}`);
+  return api.get(`/users/${vendedorId}/auctions`);
 }
 
 /**

@@ -10,10 +10,10 @@ export function login(data) {
 }
 
 /**
- * Cierra sesión (invalida el token en el backend si aplica).
+ * Cierra sesión limpiando la sesión local (JWT es stateless, no requiere llamada al backend).
  */
 export function logout() {
-  return api.post('/auth/logout', {});
+  cerrarSesion();
 }
 
 // ── Helpers de sesión (localStorage) ─────────────────

@@ -21,9 +21,10 @@ form.addEventListener('submit', async e => {
   btnEntrar.textContent = 'Verificando…';
 
   try {
+    const apiBase = window.location.port === '5073' ? '' : 'http://localhost:5073';
     const res = await fetch(
-      `http://localhost:5073/api/v1/users?email=${encodeURIComponent(email)}`,
-      { signal: AbortSignal.timeout(8000) }
+      `${apiBase}/api/v1/users?email=${encodeURIComponent(email)}`,
+      { signal: AbortSignal.timeout(5000) }
     );
 
     if (!res.ok) throw new Error('not_found');

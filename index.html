@@ -122,15 +122,18 @@
         btnEntrar.textContent = 'Verificando…';
 
         try {
+          console.log('[SubastaYa] Buscando usuario:', emailVal);
+          const apiBase = window.location.port === '5073' ? '' : 'http://localhost:5073';
           const res = await fetch(
-            `http://localhost:5073/api/v1/users?email=${encodeURIComponent(emailVal)}`,
-            { signal: AbortSignal.timeout(8000) }
+            `${apiBase}/api/v1/users?email=${encodeURIComponent(emailVal)}`,
+            { signal: AbortSignal.timeout(5000) }
           );
+          console.log('[SubastaYa] Respuesta HTTP:', res.status);
 
           if (!res.ok) throw new Error('not_found');
           const usuario = await res.json();
+          console.log('[SubastaYa] Usuario encontrado:', usuario);
 
-          // Puede venir como array o como objeto directo
           const u = Array.isArray(usuario) ? usuario[0] : usuario;
           if (!u) throw new Error('not_found');
 
@@ -141,9 +144,10 @@
           mostrarCatalogo();
 
         } catch (err) {
+          console.error('[SubastaYa] Error al identificar:', err.name, err.message);
           const esComunicacion = err.name === 'TimeoutError' || err.name === 'TypeError';
           alertaEl.innerHTML = esComunicacion
-            ? '<div class="alerta alerta-error">No se pudo conectar con el servidor.</div>'
+            ? '<div class="alerta alerta-error">No se pudo conectar con el servidor. ¿Está corriendo el backend?</div>'
             : '<div class="alerta alerta-error">No encontramos un usuario con ese email.</div>';
           btnEntrar.disabled    = false;
           btnEntrar.textContent = 'Ingresar →';

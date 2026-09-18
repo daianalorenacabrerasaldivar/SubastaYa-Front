@@ -10,6 +10,8 @@ if (!auctionId) {
 }
 
 // ── Estado ────────────────────────────────────────────
+const compradorId = Number(localStorage.getItem('subastaYa_userId'));
+
 let subasta       = null;
 let serverOffset  = 0;
 let timerInterval = null;
@@ -111,9 +113,6 @@ function renderSubasta(s) {
     proximaBox.hidden = false;
     document.getElementById('input-monto').placeholder =
       `Mínimo ${formatMoney(s.proximaPujaMinima)}`;
-    // Prellenar usuario desde localStorage
-    const uid = localStorage.getItem('subastaYa_userId');
-    if (uid) document.getElementById('input-comprador').value = uid;
 
   } else if (s.estado === 'PROGRAMADA') {
     document.getElementById('timer-subtexto').textContent = 'para el inicio';
@@ -175,15 +174,14 @@ function actualizarTimer() {
 
 // ── Formulario de puja ────────────────────────────────
 document.getElementById('btn-pujar')?.addEventListener('click', async () => {
-  const compradorId = Number(document.getElementById('input-comprador').value);
-  const monto       = Number(document.getElementById('input-monto').value);
-  const alertaEl    = document.getElementById('alerta-puja');
-  const btnPujar    = document.getElementById('btn-pujar');
+  const monto    = Number(document.getElementById('input-monto').value);
+  const alertaEl = document.getElementById('alerta-puja');
+  const btnPujar = document.getElementById('btn-pujar');
 
   alertaEl.innerHTML = '';
 
-  if (!compradorId || compradorId <= 0) {
-    mostrarAlerta(alertaEl, 'Ingresá tu ID de usuario.', 'error');
+  if (!compradorId) {
+    mostrarAlerta(alertaEl, 'Debés iniciar sesión para pujar. <a href="../index.html">Ingresar</a>', 'error');
     return;
   }
   if (!monto || monto <= 0) {
@@ -196,9 +194,6 @@ document.getElementById('btn-pujar')?.addEventListener('click', async () => {
 
   try {
     const res = await placeBid(auctionId, { compradorId, monto });
-
-    // Guardar usuario para próximas pujas
-    localStorage.setItem('subastaYa_userId', compradorId);
 
     // Actualizar precios en pantalla
     subasta.ofertaMasAlta    = res.ofertaMasAlta;

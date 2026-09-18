@@ -1,56 +1,53 @@
 import { getBalance, getTransactions, deposit } from '../services/wallet.js';
 
 // ── Estado ────────────────────────────────────────────
-let usuarioId = null;
+const usuarioId   = Number(localStorage.getItem('subastaYa_userId'));
+const nombreUsuario = localStorage.getItem('subastaYa_nombre')
+                   || localStorage.getItem('subastaYa_email')
+                   || `Usuario #${usuarioId}`;
 
 // ── Elementos ─────────────────────────────────────────
-const inputUsuario  = document.getElementById('input-usuario');
-const btnCargar     = document.getElementById('btn-cargar');
-const saldoValor    = document.getElementById('saldo-valor');
-const saldoUsuario  = document.getElementById('saldo-usuario');
-const txLista       = document.getElementById('tx-lista');
-const inputMonto    = document.getElementById('input-monto');
-const btnDepositar  = document.getElementById('btn-depositar');
+const saldoValor     = document.getElementById('saldo-valor');
+const saldoUsuario   = document.getElementById('saldo-usuario');
+const txLista        = document.getElementById('tx-lista');
+const inputMonto     = document.getElementById('input-monto');
+const btnDepositar   = document.getElementById('btn-depositar');
 const alertaDeposito = document.getElementById('alerta-deposito');
-const panelDatos    = document.getElementById('panel-datos');
+const panelDatos     = document.getElementById('panel-datos');
+const estadoCarga    = document.getElementById('estado-carga-wallet');
 
-// Prellenar con userId guardado en home/detalle
-const savedId = localStorage.getItem('subastaYa_userId');
-if (savedId) inputUsuario.value = savedId;
-
-// ── Cargar datos ──────────────────────────────────────
-btnCargar.addEventListener('click', cargarDatos);
-inputUsuario.addEventListener('keydown', e => { if (e.key === 'Enter') cargarDatos(); });
+// ── Carga automática ──────────────────────────────────
+cargarDatos();
 
 async function cargarDatos() {
-  const id = Number(inputUsuario.value);
-  if (!id || id <= 0) {
-    alertaDeposito.innerHTML = '<div class="alerta alerta-error">Ingresá un ID de usuario válido.</div>';
+  if (!usuarioId) {
+    if (estadoCarga) estadoCarga.hidden = true;
+    alertaDeposito.innerHTML =
+      '<div class="alerta alerta-error">No hay sesión activa. <a href="../index.html">Ingresar</a></div>';
     return;
   }
-  alertaDeposito.innerHTML = '';
-  btnCargar.disabled    = true;
-  btnCargar.textContent = 'Cargando…';
 
   try {
     const [balance, txs] = await Promise.all([
-      getBalance(id),
-      getTransactions(id),
+      getBalance(usuarioId),
+      getTransactions(usuarioId),
     ]);
-    usuarioId = id;
-    localStorage.setItem('subastaYa_userId', id);
 
-    saldoValor.textContent  = formatMoney(balance.saldo ?? balance.balance ?? 0);
-    saldoUsuario.textContent = `Usuario #${id}`;
+    saldoValor.textContent   = formatMoney(balance.saldoDisponible ?? 0);
+    saldoUsuario.textContent = nombreUsuario;
+    const elTotal    = document.getElementById('saldo-total');
+    const elRetenido = document.getElementById('saldo-retenido');
+    if (elTotal)    elTotal.textContent    = formatMoney(balance.saldoTotal    ?? 0);
+    if (elRetenido) elRetenido.textContent = formatMoney(balance.saldoRetenido ?? 0);
     renderTransacciones(txs);
+
+    if (estadoCarga) estadoCarga.hidden = true;
     panelDatos.hidden = false;
 
   } catch (err) {
+    if (estadoCarga) estadoCarga.hidden = true;
     alertaDeposito.innerHTML =
-      '<div class="alerta alerta-error">No se encontró el usuario o hubo un error.</div>';
-  } finally {
-    btnCargar.disabled    = false;
-    btnCargar.textContent = 'Ver billetera';
+      '<div class="alerta alerta-error">No se pudo cargar la billetera. Verificá que el backend esté corriendo.</div>';
   }
 }
 
@@ -71,10 +68,6 @@ inputMonto.addEventListener('input', () => {
 btnDepositar.addEventListener('click', async () => {
   alertaDeposito.innerHTML = '';
 
-  if (!usuarioId) {
-    alertaDeposito.innerHTML = '<div class="alerta alerta-error">Primero cargá tu billetera.</div>';
-    return;
-  }
   const monto = Number(inputMonto.value);
   if (!monto || monto <= 0) {
     alertaDeposito.innerHTML = '<div class="alerta alerta-error">Ingresá un monto válido.</div>';
@@ -86,14 +79,17 @@ btnDepositar.addEventListener('click', async () => {
 
   try {
     const res = await deposit({ usuarioId, monto });
-    saldoValor.textContent = formatMoney(res.saldo ?? res.nuevoSaldo ?? res.balance ?? 0);
+    saldoValor.textContent = formatMoney(res.saldoDisponible ?? 0);
+    const elTotal    = document.getElementById('saldo-total');
+    const elRetenido = document.getElementById('saldo-retenido');
+    if (elTotal)    elTotal.textContent    = formatMoney(res.saldoTotal    ?? 0);
+    if (elRetenido) elRetenido.textContent = formatMoney(res.saldoRetenido ?? 0);
 
     alertaDeposito.innerHTML =
       `<div class="alerta alerta-success">¡Se acreditaron ${formatMoney(monto)}!</div>`;
     inputMonto.value = '';
     document.querySelectorAll('.monto-chip').forEach(c => c.classList.remove('activo'));
 
-    // Recargar historial
     const txs = await getTransactions(usuarioId);
     renderTransacciones(txs);
 
@@ -113,14 +109,14 @@ function renderTransacciones(txs) {
     return;
   }
   txLista.innerHTML = txs.map(tx => {
-    const tipo   = clasificarTipo(tx.tipo);
-    const signo  = tipo === 'credito' || tipo === 'liberado' ? '+' : '-';
+    const tipo  = clasificarTipo(tx.tipo);
+    const signo = tipo === 'credito' || tipo === 'liberado' ? '+' : '-';
     return `
       <div class="tx-item">
         <div class="tx-icono ${tipo}">${iconoTipo(tipo)}</div>
         <div class="tx-info">
-          <p class="tx-concepto">${tx.concepto || tx.descripcion || labelTipo(tx.tipo)}</p>
-          <p class="tx-fecha">${formatFecha(tx.fecha || tx.fechaCreacion)}</p>
+          <p class="tx-concepto">${labelTipo(tx.tipo)}</p>
+          <p class="tx-fecha">${formatFecha(tx.fecha)}</p>
         </div>
         <span class="tx-monto ${tipo}">${signo}${formatMoney(tx.monto)}</span>
       </div>`;
@@ -129,12 +125,11 @@ function renderTransacciones(txs) {
 
 // ── Helpers ───────────────────────────────────────────
 function clasificarTipo(tipo) {
-  if (!tipo) return 'credito';
-  const t = tipo.toLowerCase();
-  if (t.includes('deposit') || t.includes('acredit') || t.includes('credito')) return 'credito';
-  if (t.includes('reten'))   return 'retenido';
-  if (t.includes('liber'))   return 'liberado';
-  return 'debito';
+  if (tipo === 'Deposito' || tipo === 'Cobro') return 'credito';
+  if (tipo === 'Liberacion')                  return 'liberado';
+  if (tipo === 'Retencion')                   return 'retenido';
+  if (tipo === 'Pago')                        return 'debito';
+  return 'credito';
 }
 
 function iconoTipo(tipo) {
@@ -142,13 +137,14 @@ function iconoTipo(tipo) {
 }
 
 function labelTipo(tipo) {
-  if (!tipo) return 'Transacción';
-  const t = tipo.toLowerCase();
-  if (t.includes('deposit'))   return 'Depósito';
-  if (t.includes('reten'))     return 'Retención de puja';
-  if (t.includes('liber'))     return 'Liberación de puja';
-  if (t.includes('cobro') || t.includes('debito')) return 'Cobro';
-  return 'Transacción';
+  const labels = {
+    Deposito:   'Depósito de crédito',
+    Retencion:  'Retención por puja',
+    Liberacion: 'Liberación de puja',
+    Pago:       'Pago de subasta ganada',
+    Cobro:      'Cobro de venta',
+  };
+  return labels[tipo] ?? tipo ?? 'Transacción';
 }
 
 function formatMoney(n) {

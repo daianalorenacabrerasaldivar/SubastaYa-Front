@@ -3,18 +3,71 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Iniciar sesión — SubastaYa</title>
+  <title>Ingresar — SubastaYa</title>
   <link rel="stylesheet" href="../styles/variables.css">
   <link rel="stylesheet" href="../styles/global.css">
   <link rel="stylesheet" href="../styles/components.css">
   <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/login.css">
 </head>
 <body>
+
   <div id="app-header"></div>
-  <main class="page-content">
-    <p class="estado-carga">Cargando login… (T6)</p>
-  </main>
+
+  <div class="login-page">
+    <div class="login-card">
+
+      <!-- Logo -->
+      <div class="login-logo">
+        <span class="login-logo__icono">🏷️</span>
+        <p class="login-logo__nombre">Subasta<span>Ya</span></p>
+        <p class="login-logo__sub">Ingresá a tu cuenta</p>
+      </div>
+
+      <hr class="login-divider">
+
+      <!-- Formulario -->
+      <form id="form-login" novalidate>
+
+        <div class="form-group">
+          <label class="form-label" for="input-email">Email</label>
+          <input id="input-email" type="email" class="form-control"
+                 placeholder="tu@email.com" autocomplete="email" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="input-password">Contraseña</label>
+          <div style="position:relative">
+            <input id="input-password" type="password" class="form-control"
+                   placeholder="••••••••" autocomplete="current-password"
+                   style="padding-right:44px" required>
+            <button type="button" id="toggle-password"
+                    style="position:absolute; right:12px; top:50%; transform:translateY(-50%);
+                           background:none; border:none; cursor:pointer; font-size:16px; padding:0">
+              👁
+            </button>
+          </div>
+        </div>
+
+        <div id="alerta-login"></div>
+
+        <button id="btn-login" type="submit" class="btn btn-primary btn-full login-submit">
+          Ingresar
+        </button>
+
+      </form>
+
+      <p class="login-footer">
+        ¿No tenés cuenta? <a href="#">Registrate</a>
+      </p>
+
+    </div>
+  </div>
+
   <div id="app-footer"></div>
+
   <script src="../components/layout.js" type="module"></script>
+  <script src="../scripts/login.js" type="module"></script>
+
 </body>
 </html>

@@ -1,5 +1,8 @@
 import { createAuction } from '../services/auctions.js';
 
+// ── Sesión ────────────────────────────────────────────
+const vendedorId = Number(localStorage.getItem('subastaYa_userId'));
+
 // ── Elementos del form ────────────────────────────────
 const form       = document.getElementById('form-publicar');
 const btnPublicar = document.getElementById('btn-publicar');
@@ -92,7 +95,6 @@ form.addEventListener('submit', async e => {
   e.preventDefault();
   alertaEl.innerHTML = '';
 
-  const vendedorId  = Number(document.getElementById('input-vendedor').value);
   const categoriaId = Number(inputCategoria.value);
   const titulo      = inputTitulo.value.trim();
   const descripcion = document.getElementById('input-descripcion').value.trim();
@@ -103,8 +105,8 @@ form.addEventListener('submit', async e => {
   const fechaFin    = inputFin.value;
 
   // Validaciones básicas
-  if (!vendedorId || vendedorId <= 0) {
-    mostrarAlerta('Ingresá tu ID de vendedor.', 'error'); return;
+  if (!vendedorId) {
+    mostrarAlerta('No hay sesión activa. <a href="../index.html">Ingresar</a>', 'error'); return;
   }
   if (!categoriaId) {
     mostrarAlerta('Seleccioná una categoría.', 'error'); return;

@@ -1,0 +1,199 @@
+/* ════════════════════════════════════════════════════
+   user-activity.css — Mis actividades (T5)
+   ════════════════════════════════════════════════════ */
+
+/* ── Encabezado ───────────────────────────────────────── */
+.actividades-header {
+  margin-bottom: 32px;
+}
+.actividades-header h1 {
+  font-size:   clamp(22px, 3vw, 30px);
+  font-weight: 700;
+  color:       var(--color-text);
+  margin-bottom: 6px;
+}
+.actividades-header p {
+  color:     var(--color-text-muted);
+  font-size: var(--font-size-base);
+}
+
+/* ── Identificación ───────────────────────────────────── */
+.identificacion-card {
+  max-width:     520px;
+  margin-bottom: 32px;
+}
+
+/* ── Tabs de sección ──────────────────────────────────── */
+.actividades-tabs {
+  display: flex;
+  gap:     4px;
+  background: var(--color-surface);
+  border:  1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 4px;
+  width:   fit-content;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.actividades-tab {
+  padding:       8px 18px;
+  border:        none;
+  border-radius: var(--radius);
+  background:    transparent;
+  font-family:   var(--font-sans);
+  font-size:     var(--font-size-sm);
+  font-weight:   500;
+  color:         var(--color-text-muted);
+  cursor:        pointer;
+  transition:    background .15s, color .15s;
+  white-space:   nowrap;
+  display:       flex;
+  align-items:   center;
+  gap:           6px;
+}
+.actividades-tab:hover { color: var(--color-text); }
+.actividades-tab.active {
+  background:  var(--color-primary);
+  color:       #fff;
+  font-weight: 600;
+}
+.tab-count {
+  background:    rgba(255,255,255,.3);
+  border-radius: var(--radius-full);
+  font-size:     11px;
+  font-weight:   700;
+  padding:       1px 6px;
+  min-width:     18px;
+  text-align:    center;
+}
+.actividades-tab:not(.active) .tab-count {
+  background:    var(--color-surface-2);
+  color:         var(--color-text-muted);
+}
+
+/* ── Panel de sección ─────────────────────────────────── */
+.seccion-panel { display: none; }
+.seccion-panel.activa { display: block; }
+
+/* ── Lista de items ───────────────────────────────────── */
+.actividad-lista {
+  display:        flex;
+  flex-direction: column;
+  gap:            12px;
+}
+
+/* ── Card de actividad ────────────────────────────────── */
+.actividad-card {
+  background:    var(--color-surface);
+  border:        1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding:       16px 20px;
+  display:       flex;
+  align-items:   center;
+  gap:           16px;
+  transition:    box-shadow .15s;
+}
+.actividad-card:hover { box-shadow: var(--shadow); }
+
+.actividad-img {
+  width:         64px;
+  height:        64px;
+  border-radius: var(--radius);
+  object-fit:    cover;
+  flex-shrink:   0;
+  background:    var(--color-surface-2);
+  display:       flex;
+  align-items:   center;
+  justify-content: center;
+  font-size:     28px;
+  overflow:      hidden;
+}
+.actividad-img img {
+  width:      100%;
+  height:     100%;
+  object-fit: cover;
+}
+
+.actividad-info {
+  flex: 1;
+  min-width: 0;
+}
+.actividad-titulo {
+  font-size:   var(--font-size-base);
+  font-weight: 600;
+  color:       var(--color-text);
+  white-space: nowrap;
+  overflow:    hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+.actividad-meta {
+  font-size: var(--font-size-sm);
+  color:     var(--color-text-muted);
+  display:   flex;
+  gap:       12px;
+  flex-wrap: wrap;
+}
+
+.actividad-monto {
+  font-size:            var(--font-size-base);
+  font-weight:          700;
+  font-variant-numeric: tabular-nums;
+  color:                var(--color-text);
+  white-space:          nowrap;
+  text-align:           right;
+}
+.actividad-monto.ganando { color: var(--color-success); }
+.actividad-monto.perdiendo { color: var(--color-error); }
+.actividad-monto.ganada   { color: var(--color-success); }
+
+.actividad-acciones {
+  display:    flex;
+  flex-direction: column;
+  gap:        6px;
+  flex-shrink: 0;
+}
+
+/* ── Estado vacío ─────────────────────────────────────── */
+.actividad-vacia {
+  text-align: center;
+  padding:    48px 20px;
+  color:      var(--color-text-muted);
+}
+.actividad-vacia span { font-size: 40px; display: block; margin-bottom: 12px; }
+
+/* ── Resumen estadísticas ─────────────────────────────── */
+.stats-row {
+  display:   flex;
+  gap:       16px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+.stat-chip {
+  background:    var(--color-surface);
+  border:        1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding:       14px 20px;
+  flex:          1;
+  min-width:     120px;
+  text-align:    center;
+}
+.stat-chip__valor {
+  font-size:            24px;
+  font-weight:          700;
+  font-variant-numeric: tabular-nums;
+  color:                var(--color-text);
+  line-height:          1;
+}
+.stat-chip__label {
+  font-size:   var(--font-size-sm);
+  color:       var(--color-text-muted);
+  margin-top:  4px;
+}
+
+/* ── Responsive ───────────────────────────────────────── */
+@media (max-width: 600px) {
+  .actividad-card { flex-wrap: wrap; }
+  .actividad-img  { width: 48px; height: 48px; }
+  .actividad-acciones { flex-direction: row; }
+}

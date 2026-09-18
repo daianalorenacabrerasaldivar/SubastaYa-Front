@@ -8,13 +8,89 @@
   <link rel="stylesheet" href="../styles/global.css">
   <link rel="stylesheet" href="../styles/components.css">
   <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/user-activity.css">
 </head>
 <body>
+
   <div id="app-header"></div>
+
   <main class="page-content">
-    <p class="estado-carga">Cargando actividades… (T5)</p>
+
+    <div class="actividades-header">
+      <h1>Mis actividades</h1>
+      <p>Seguí tus subastas publicadas y las pujas que realizaste.</p>
+    </div>
+
+    <div id="alerta-carga"></div>
+
+    <div id="estado-carga-actividades" style="text-align:center; padding:32px">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- Panel de actividades -->
+    <div id="panel-actividades" hidden>
+
+      <!-- Estadísticas rápidas -->
+      <div class="stats-row">
+        <div class="stat-chip">
+          <p id="stat-publicadas" class="stat-chip__valor">0</p>
+          <p class="stat-chip__label">Publicadas</p>
+        </div>
+        <div class="stat-chip">
+          <p id="stat-activas" class="stat-chip__valor">0</p>
+          <p class="stat-chip__label">Activas</p>
+        </div>
+        <div class="stat-chip">
+          <p id="stat-pujas" class="stat-chip__valor">0</p>
+          <p class="stat-chip__label">Mis pujas</p>
+        </div>
+        <div class="stat-chip">
+          <p id="stat-ganadas" class="stat-chip__valor">0</p>
+          <p class="stat-chip__label">Ganadas</p>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="actividades-tabs">
+        <button class="actividades-tab active" id="tab-publicadas" data-panel="panel-publicadas">
+          Mis publicaciones <span class="tab-count">0</span>
+        </button>
+        <button class="actividades-tab" id="tab-pujas" data-panel="panel-pujas">
+          Mis pujas <span class="tab-count">0</span>
+        </button>
+        <button class="actividades-tab" id="tab-ganadas" data-panel="panel-ganadas">
+          Ganadas <span class="tab-count">0</span>
+        </button>
+      </div>
+
+      <!-- Panel: Mis publicaciones -->
+      <div id="panel-publicadas" class="seccion-panel activa">
+        <div id="lista-publicadas" class="actividad-lista"></div>
+      </div>
+
+      <!-- Panel: Mis pujas -->
+      <div id="panel-pujas" class="seccion-panel">
+        <div id="lista-pujas" class="actividad-lista"></div>
+      </div>
+
+      <!-- Panel: Ganadas (filtrado del de pujas) -->
+      <div id="panel-ganadas" class="seccion-panel">
+        <div id="lista-ganadas" class="actividad-lista">
+          <div class="actividad-vacia">
+            <span>🏆</span>
+            <p>Cargando subastas ganadas…</p>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /panel-actividades -->
+
   </main>
+
   <div id="app-footer"></div>
+
   <script src="../components/layout.js" type="module"></script>
+  <script src="../scripts/user-activity.js" type="module"></script>
+
 </body>
 </html>

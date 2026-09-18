@@ -5,14 +5,29 @@
  * modificá SOLO este archivo.
  */
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Detecta si la página está dentro de /pages/ para ajustar rutas relativas
+function initLayout() {
   const enSubcarpeta = window.location.pathname.includes('/pages/');
   const ROOT = enSubcarpeta ? '../' : './';
 
-  // ── Header ──────────────────────────────────────────
+  // ── Guard: redirigir a identificación si no hay sesión ──
+  // index.html y identificacion.html manejan su propia lógica de sesión
+  const path = window.location.pathname;
+  const esPublica = path.endsWith('/') || path.endsWith('index.html') ||
+                    path.includes('identificacion.html');
+  const email = localStorage.getItem('subastaYa_email');
+
+  if (!esPublica && !email) {
+    window.location.href = `${ROOT}pages/identificacion.html`;
+    return;
+  }
+
+  // ── Header ──────────────────────────────────────────────
   const headerEl = document.getElementById('app-header');
   if (headerEl) {
+    const nombre     = localStorage.getItem('subastaYa_nombre') || email || '';
+    const rol        = localStorage.getItem('subastaYa_rol') ?? '';
+    const esVendedor = rol.toLowerCase() === 'vendedor';
+
     headerEl.innerHTML = `
       <header class="main-header">
         <div class="main-header__inner">
@@ -28,28 +43,29 @@ document.addEventListener('DOMContentLoaded', () => {
           </nav>
 
           <div class="main-header__actions">
-            <a href="${ROOT}pages/create-auction.html" class="btn btn-primary btn-sm">
-              + Publicar
-            </a>
-            <a href="${ROOT}pages/login.html" class="btn btn-secondary btn-sm" id="btn-login">
-              Iniciar sesión
-            </a>
+            ${esVendedor ? `<a href="${ROOT}pages/create-auction.html" class="btn btn-primary btn-sm">+ Publicar</a>` : ''}
+            <div class="header-usuario">
+              <span class="header-usuario__email" title="${email}">${nombre}</span>
+              <button class="btn btn-secondary btn-sm" id="btn-salir">Salir</button>
+            </div>
           </div>
 
-          <!-- Botón hamburguesa para mobile -->
           <button class="main-header__burger" id="nav-burger" aria-label="Menú">
             <span></span><span></span><span></span>
           </button>
 
         </div>
 
-        <!-- Menú mobile desplegable -->
         <div class="main-header__mobile-nav" id="mobile-nav" hidden>
           <a href="${ROOT}index.html">Subastas</a>
           <a href="${ROOT}pages/wallet.html">Billetera</a>
           <a href="${ROOT}pages/user-activity.html">Mis actividades</a>
-          <a href="${ROOT}pages/create-auction.html">Publicar subasta</a>
-          <a href="${ROOT}pages/login.html">Iniciar sesión</a>
+          ${esVendedor ? `<a href="${ROOT}pages/create-auction.html">Publicar subasta</a>` : ''}
+          <hr style="border-color:rgba(255,255,255,.1); margin:8px 0">
+          <span style="font-size:13px; color:rgba(255,255,255,.5); padding:4px 0">${nombre}</span>
+          <button class="btn btn-secondary btn-sm" id="btn-salir-mobile" style="margin-top:4px; width:100%; justify-content:center">
+            Salir
+          </button>
         </div>
       </header>
     `;
@@ -60,16 +76,22 @@ document.addEventListener('DOMContentLoaded', () => {
       nav.hidden = !nav.hidden;
     });
 
-    // Resalta el link activo según la URL actual
-    const links = headerEl.querySelectorAll('a');
-    links.forEach(link => {
-      if (link.href === window.location.href) {
-        link.classList.add('active');
-      }
+    // Cerrar sesión (desktop y mobile)
+    function cerrarSesion() {
+      ['subastaYa_email', 'subastaYa_userId', 'subastaYa_nombre', 'subastaYa_token', 'subastaYa_rol']
+        .forEach(k => localStorage.removeItem(k));
+      window.location.href = `${ROOT}pages/identificacion.html`;
+    }
+    document.getElementById('btn-salir')?.addEventListener('click', cerrarSesion);
+    document.getElementById('btn-salir-mobile')?.addEventListener('click', cerrarSesion);
+
+    // Resalta link activo
+    headerEl.querySelectorAll('a').forEach(link => {
+      if (link.href === window.location.href) link.classList.add('active');
     });
   }
 
-  // ── Footer ──────────────────────────────────────────
+  // ── Footer ──────────────────────────────────────────────
   const footerEl = document.getElementById('app-footer');
   if (footerEl) {
     footerEl.innerHTML = `
@@ -82,4 +104,10 @@ document.addEventListener('DOMContentLoaded', () => {
       </footer>
     `;
   }
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initLayout);
+} else {
+  initLayout();
+}

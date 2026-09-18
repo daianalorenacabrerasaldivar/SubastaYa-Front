@@ -10,10 +10,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const ROOT = enSubcarpeta ? '../' : './';
 
   // ── Guard: redirigir a identificación si no hay sesión ──
-  const esIdentificacion = window.location.pathname.includes('identificacion.html');
+  // index.html y identificacion.html manejan su propia lógica de sesión
+  const path = window.location.pathname;
+  const esPublica = path.endsWith('/') || path.endsWith('index.html') ||
+                    path.includes('identificacion.html');
   const email = localStorage.getItem('subastaYa_email');
 
-  if (!esIdentificacion && !email) {
+  if (!esPublica && !email) {
     window.location.href = `${ROOT}pages/identificacion.html`;
     return;
   }

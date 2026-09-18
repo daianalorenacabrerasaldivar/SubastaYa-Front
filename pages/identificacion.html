@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bienvenido — SubastaYa</title>
+  <link rel="stylesheet" href="../styles/variables.css">
+  <link rel="stylesheet" href="../styles/global.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/identificacion.css">
+</head>
+<body>
+
+  <div class="id-page">
+    <div class="id-card">
+
+      <span class="id-logo">🏷️</span>
+      <h1 class="id-titulo">Subasta<span>Ya</span></h1>
+      <p class="id-subtitulo">
+        Plataforma de subastas en línea en tiempo real.<br>
+        Identificate para continuar a la demo.
+      </p>
+
+      <!-- Módulos disponibles -->
+      <div class="modulos-lista">
+        <div class="modulo-pill"><span class="modulo-pill__num">1</span> Catálogo y exploración de subastas</div>
+        <div class="modulo-pill"><span class="modulo-pill__num">2</span> Creación y publicación de subastas</div>
+        <div class="modulo-pill"><span class="modulo-pill__num">3</span> Sala de subasta en vivo</div>
+        <div class="modulo-pill"><span class="modulo-pill__num">4</span> Billetera virtual y gestión de fondos</div>
+        <div class="modulo-pill"><span class="modulo-pill__num">5</span> Panel de usuario — Mis actividades</div>
+      </div>
+
+      <hr class="id-divider">
+
+      <!-- Formulario -->
+      <form id="form-identificacion" class="id-form" novalidate>
+
+        <div class="form-group">
+          <label class="form-label" for="input-email">Tu email</label>
+          <input id="input-email" type="email" class="form-control"
+                 placeholder="nombre@ejemplo.com" autocomplete="email" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="input-id">Tu número de usuario</label>
+          <input id="input-id" type="number" min="1" class="form-control"
+                 placeholder="Ej: 3" required>
+          <span class="form-hint">El ID con el que estás registrado en el sistema.</span>
+        </div>
+
+        <div id="alerta-id"></div>
+
+        <button id="btn-entrar" type="submit" class="btn btn-primary btn-full">
+          Entrar a la demo →
+        </button>
+
+      </form>
+
+    </div>
+  </div>
+
+  <script src="../scripts/identificacion.js" type="module"></script>
+
+</body>
+</html>

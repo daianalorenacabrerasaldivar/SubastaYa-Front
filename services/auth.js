@@ -18,9 +18,10 @@ export function logout() {
 
 // ── Helpers de sesión (localStorage) ─────────────────
 export function guardarSesion(usuario) {
-  localStorage.setItem('subastaYa_userId',    String(usuario.id));
-  localStorage.setItem('subastaYa_nombre',    usuario.nombre ?? '');
-  localStorage.setItem('subastaYa_email',     usuario.email  ?? '');
+  localStorage.setItem('subastaYa_userId', String(usuario.usuarioId ?? usuario.id ?? ''));
+  localStorage.setItem('subastaYa_nombre', usuario.nombre ?? '');
+  localStorage.setItem('subastaYa_email',  usuario.email  ?? '');
+  localStorage.setItem('subastaYa_rol',    usuario.rol    ?? '');
   if (usuario.token) {
     localStorage.setItem('subastaYa_token', usuario.token);
   }
@@ -38,7 +39,7 @@ export function obtenerSesion() {
 }
 
 export function cerrarSesion() {
-  ['subastaYa_userId', 'subastaYa_nombre', 'subastaYa_email', 'subastaYa_token']
+  ['subastaYa_userId', 'subastaYa_nombre', 'subastaYa_email', 'subastaYa_token', 'subastaYa_rol']
     .forEach(k => localStorage.removeItem(k));
 }
 

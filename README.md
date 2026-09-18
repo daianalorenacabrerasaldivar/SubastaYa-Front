@@ -39,12 +39,12 @@ Para cerrar sesión basta con limpiar el `localStorage`.
 
 Contraseña de todos: `Password123!`
 
-| Email | Rol | Saldo disponible | Notas |
-|---|---|---|---|
-| `vendedor@test.com` | Vendedor | $7.500 | Publicó las 5 subastas del seed |
-| `comprador1@test.com` | Comprador | $105.000 | Postor líder en iPhone ($45.000 retenidos) |
-| `comprador2@test.com` | Comprador | $180.500 | Ganó la Bicicleta Fixie; $12.000 retenidos en Charizard |
-| `sinfondos@test.com` | Comprador | $500 | Para probar rechazo por fondos insuficientes |
+| Email | Rol | Total | Retenido | Disponible | Notas |
+|---|---|---|---|---|---|
+| `vendedor@test.com` | Vendedor | $0 | $0 | $0 | Publicó las 5 subastas del seed |
+| `comprador1@test.com` | Comprador | $150.000 | $45.000 | $105.000 | Postor líder en iPhone |
+| `comprador2@test.com` | Comprador | $200.000 | $0 | $200.000 | Postor habilitado; ganó la Bicicleta Fixie (liquidación pendiente del worker) |
+| `sinfondos@test.com` | Comprador | $500 | $0 | $500 | Para probar rechazo por fondos insuficientes |
 
 ---
 

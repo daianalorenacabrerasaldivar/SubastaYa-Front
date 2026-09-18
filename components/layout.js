@@ -78,7 +78,7 @@ function initLayout() {
 
     // Cerrar sesión (desktop y mobile)
     function cerrarSesion() {
-      ['subastaYa_email', 'subastaYa_userId', 'subastaYa_nombre', 'subastaYa_token']
+      ['subastaYa_email', 'subastaYa_userId', 'subastaYa_nombre', 'subastaYa_token', 'subastaYa_rol']
         .forEach(k => localStorage.removeItem(k));
       window.location.href = `${ROOT}pages/identificacion.html`;
     }

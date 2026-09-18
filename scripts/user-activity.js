@@ -1,39 +1,31 @@
 import { getAuctionsByVendedor, getBidsByComprador } from '../services/users.js';
 
-// ── Estado ────────────────────────────────────────────
-let usuarioId = null;
+// ── Sesión ────────────────────────────────────────────
+const usuarioId = Number(localStorage.getItem('subastaYa_userId'));
+const rol       = localStorage.getItem('subastaYa_rol') ?? '';
+const esVendedor = rol.toLowerCase() === 'vendedor';
 
 // ── Elementos ─────────────────────────────────────────
-const inputUsuario   = document.getElementById('input-usuario');
-const btnCargar      = document.getElementById('btn-cargar');
-const alertaCarga    = document.getElementById('alerta-carga');
+const alertaCarga      = document.getElementById('alerta-carga');
 const panelActividades = document.getElementById('panel-actividades');
+const estadoCarga      = document.getElementById('estado-carga-actividades');
 
-const savedId = localStorage.getItem('subastaYa_userId');
-if (savedId) inputUsuario.value = savedId;
-
-// ── Identificación ────────────────────────────────────
-btnCargar.addEventListener('click', cargarActividades);
-inputUsuario.addEventListener('keydown', e => { if (e.key === 'Enter') cargarActividades(); });
+// ── Carga automática ──────────────────────────────────
+cargarActividades();
 
 async function cargarActividades() {
-  const id = Number(inputUsuario.value);
-  if (!id || id <= 0) {
-    alertaCarga.innerHTML = '<div class="alerta alerta-error">Ingresá un ID de usuario válido.</div>';
+  if (!usuarioId) {
+    if (estadoCarga) estadoCarga.hidden = true;
+    alertaCarga.innerHTML =
+      '<div class="alerta alerta-error">No hay sesión activa. <a href="../index.html">Ingresar</a></div>';
     return;
   }
-  alertaCarga.innerHTML = '';
-  btnCargar.disabled    = true;
-  btnCargar.textContent = 'Cargando…';
 
   try {
     const [publicadas, pujas] = await Promise.allSettled([
-      getAuctionsByVendedor(id),
-      getBidsByComprador(id),
+      getAuctionsByVendedor(usuarioId),
+      getBidsByComprador(usuarioId),
     ]);
-
-    usuarioId = id;
-    localStorage.setItem('subastaYa_userId', id);
 
     const subastasPublicadas = resolverResult(publicadas, []);
     const pujasData          = resolverResult(pujas, []);
@@ -43,36 +35,38 @@ async function cargarActividades() {
     renderPujas(pujasData);
     renderGanadas(pujasData);
 
+    // Tab por defecto según rol
+    if (!esVendedor) activarTab('tab-pujas');
+
+    if (estadoCarga) estadoCarga.hidden = true;
     panelActividades.hidden = false;
 
   } catch (err) {
+    if (estadoCarga) estadoCarga.hidden = true;
     alertaCarga.innerHTML =
       '<div class="alerta alerta-error">No se pudieron cargar las actividades.</div>';
-  } finally {
-    btnCargar.disabled    = false;
-    btnCargar.textContent = 'Ver actividades';
   }
 }
 
 function resolverResult(settled, fallback) {
-  return settled.status === 'fulfilled' ? (settled.value?.items ?? settled.value ?? fallback) : fallback;
+  return settled.status === 'fulfilled'
+    ? (settled.value?.items ?? settled.value ?? fallback)
+    : fallback;
 }
 
 // ── Estadísticas rápidas ──────────────────────────────
 function renderStats(publicadas, pujas) {
-  const activas    = publicadas.filter(s => s.estado === 'ACTIVA').length;
-  const ganadas    = pujas.filter(p => p.esGanador || p.resultado === 'GANADO').length;
-  const enCurso    = pujas.filter(p => p.estadoSubasta === 'ACTIVA').length;
+  const activas = publicadas.filter(s => s.estado === 'ACTIVA').length;
+  const ganadas = pujas.filter(p => p.esGanador).length;
 
-  document.getElementById('stat-publicadas').textContent  = publicadas.length;
-  document.getElementById('stat-activas').textContent     = activas;
-  document.getElementById('stat-pujas').textContent       = pujas.length;
-  document.getElementById('stat-ganadas').textContent     = ganadas;
+  document.getElementById('stat-publicadas').textContent = publicadas.length;
+  document.getElementById('stat-activas').textContent    = activas;
+  document.getElementById('stat-pujas').textContent      = pujas.length;
+  document.getElementById('stat-ganadas').textContent    = ganadas;
 
-  // Actualizar contadores en tabs
   setTabCount('tab-publicadas', publicadas.length);
-  setTabCount('tab-pujas', pujas.length);
-  setTabCount('tab-ganadas', ganadas);
+  setTabCount('tab-pujas',      pujas.length);
+  setTabCount('tab-ganadas',    ganadas);
 }
 
 function setTabCount(id, n) {
@@ -88,9 +82,7 @@ function renderPublicadas(subastas) {
       <div class="actividad-vacia">
         <span>📦</span>
         <p>Todavía no publicaste ninguna subasta.</p>
-        <a href="create-auction.html" class="btn btn-primary btn-sm" style="margin-top:12px">
-          + Publicar subasta
-        </a>
+        ${esVendedor ? `<a href="create-auction.html" class="btn btn-primary btn-sm" style="margin-top:12px">+ Publicar subasta</a>` : ''}
       </div>`;
     return;
   }
@@ -132,9 +124,8 @@ function renderPujas(pujas) {
     return;
   }
   lista.innerHTML = pujas.map(p => {
-    const esGanando = p.esGanador || p.resultado === 'GANADO';
+    const esGanando = p.esGanador;
     const enCurso   = p.estadoSubasta === 'ACTIVA';
-    const claseMontoActual = enCurso ? (esGanando ? 'ganando' : 'perdiendo') : (esGanando ? 'ganada' : '');
 
     return `
       <div class="actividad-card">
@@ -147,19 +138,17 @@ function renderPujas(pujas) {
           <p class="actividad-titulo">${p.tituloSubasta || 'Subasta #' + p.subastaId}</p>
           <div class="actividad-meta">
             <span class="badge badge-${(p.estadoSubasta || '').toLowerCase()}">${estadoLabel(p.estadoSubasta)}</span>
-            <span>Mi puja: ${formatMoney(p.miMejorPuja || p.monto)}</span>
-            ${enCurso ? `<span style="color:${esGanando ? 'var(--color-success)' : 'var(--color-error)'}">
+            <span>Mi puja: ${formatMoney(p.miMejorPuja)}</span>
+            ${enCurso ? `<span style="color:var(--color-${esGanando ? 'success' : 'error'})">
               ${esGanando ? '✓ Ganando' : '↑ Superado'}
             </span>` : ''}
           </div>
         </div>
-        <div class="actividad-monto ${claseMontoActual}">
-          ${formatMoney(p.ofertaMasAlta || p.miMejorPuja || p.monto)}
+        <div class="actividad-monto ${enCurso ? (esGanando ? 'ganando' : 'perdiendo') : (esGanando ? 'ganada' : '')}">
+          ${formatMoney(p.ofertaMasAlta ?? p.miMejorPuja)}
         </div>
         <div class="actividad-acciones">
-          <a href="auction-detail.html?id=${p.subastaId || p.auctionId}" class="btn btn-secondary btn-sm">
-            Ver →
-          </a>
+          <a href="auction-detail.html?id=${p.subastaId}" class="btn btn-secondary btn-sm">Ver →</a>
         </div>
       </div>`;
   }).join('');
@@ -167,7 +156,7 @@ function renderPujas(pujas) {
 
 // ── Tab: Ganadas ──────────────────────────────────────
 function renderGanadas(pujas) {
-  const ganadas = pujas.filter(p => p.esGanador || p.resultado === 'GANADO');
+  const ganadas = pujas.filter(p => p.esGanador);
   const lista   = document.getElementById('lista-ganadas');
   if (!ganadas.length) {
     lista.innerHTML = `
@@ -191,29 +180,31 @@ function renderGanadas(pujas) {
         <p class="actividad-titulo">${p.tituloSubasta || 'Subasta #' + p.subastaId}</p>
         <div class="actividad-meta">
           <span style="color:var(--color-success); font-weight:600">✓ Ganada</span>
-          <span>Pagado: ${formatMoney(p.miMejorPuja || p.monto)}</span>
-          ${p.fechaPuja ? `<span>${formatFechaCorta(p.fechaPuja)}</span>` : ''}
+          <span>Pagado: ${formatMoney(p.miMejorPuja)}</span>
         </div>
       </div>
-      <div class="actividad-monto ganada">${formatMoney(p.miMejorPuja || p.monto)}</div>
+      <div class="actividad-monto ganada">${formatMoney(p.miMejorPuja)}</div>
       <div class="actividad-acciones">
-        <a href="auction-detail.html?id=${p.subastaId || p.auctionId}" class="btn btn-secondary btn-sm">
-          Ver →
-        </a>
+        <a href="auction-detail.html?id=${p.subastaId}" class="btn btn-secondary btn-sm">Ver →</a>
       </div>
     </div>`).join('');
 }
 
-// ── Tabs de navegación ────────────────────────────────
+// ── Navegación de tabs ────────────────────────────────
 document.querySelectorAll('.actividades-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.actividades-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.seccion-panel').forEach(p => p.classList.remove('activa'));
+  tab.addEventListener('click', () => activarTab(tab.id));
+});
+
+function activarTab(tabId) {
+  document.querySelectorAll('.actividades-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.seccion-panel').forEach(p => p.classList.remove('activa'));
+  const tab = document.getElementById(tabId);
+  if (tab) {
     tab.classList.add('active');
     const panel = document.getElementById(tab.dataset.panel);
     if (panel) panel.classList.add('activa');
-  });
-});
+  }
+}
 
 // ── Helpers ───────────────────────────────────────────
 function estadoLabel(e) {
@@ -224,13 +215,9 @@ function formatMoney(n) {
   return '$' + Number(n).toLocaleString('es-AR', { minimumFractionDigits: 0 });
 }
 function fechaLabel(s) {
-  if (s.estado === 'ACTIVA' && s.fechaFin) {
-    return `Cierra: ${formatFechaCorta(s.fechaFin)}`;
-  }
-  if (s.estado === 'PROGRAMADA' && s.fechaInicio) {
-    return `Inicia: ${formatFechaCorta(s.fechaInicio)}`;
-  }
-  if (s.fechaFin) return `Finalizó: ${formatFechaCorta(s.fechaFin)}`;
+  if (s.estado === 'ACTIVA' && s.fechaFin)         return `Cierra: ${formatFechaCorta(s.fechaFin)}`;
+  if (s.estado === 'PROGRAMADA' && s.fechaInicio)  return `Inicia: ${formatFechaCorta(s.fechaInicio)}`;
+  if (s.fechaFin)                                  return `Finalizó: ${formatFechaCorta(s.fechaFin)}`;
   return '';
 }
 function formatFechaCorta(iso) {

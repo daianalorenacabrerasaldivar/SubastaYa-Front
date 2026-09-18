@@ -21,17 +21,10 @@
       <p>Seguí tus subastas publicadas y las pujas que realizaste.</p>
     </div>
 
-    <!-- Identificación -->
-    <div class="form-card identificacion-card">
-      <h2>Identificate</h2>
-      <div style="display:flex; gap:8px">
-        <input id="input-usuario" type="number" min="1" class="form-control"
-               placeholder="Tu ID de usuario (Ej: 5)">
-        <button id="btn-cargar" class="btn btn-primary" style="white-space:nowrap">
-          Ver actividades
-        </button>
-      </div>
-      <div id="alerta-carga"></div>
+    <div id="alerta-carga"></div>
+
+    <div id="estado-carga-actividades" style="text-align:center; padding:32px">
+      <div class="spinner"></div>
     </div>
 
     <!-- Panel de actividades -->

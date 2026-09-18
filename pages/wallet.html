@@ -21,19 +21,11 @@
       <p>Consultá tu saldo y cargá crédito para participar en subastas.</p>
     </div>
 
-    <!-- Ingreso de usuario -->
-    <div class="form-card" style="max-width:480px; margin-bottom:32px">
-      <h2>Identificate</h2>
-      <div style="display:flex; gap:8px">
-        <input id="input-usuario" type="number" min="1" class="form-control"
-               placeholder="Tu ID de usuario (Ej: 5)">
-        <button id="btn-cargar" class="btn btn-primary" style="white-space:nowrap">
-          Ver billetera
-        </button>
-      </div>
+    <!-- Layout: historial + panel -->
+    <div id="estado-carga-wallet" style="text-align:center; padding:32px">
+      <div class="spinner"></div>
     </div>
 
-    <!-- Layout: historial + panel -->
     <div id="panel-datos" hidden>
       <div class="wallet-layout">
 
@@ -52,7 +44,11 @@
           <div class="saldo-card">
             <p class="saldo-label">Saldo disponible</p>
             <p id="saldo-valor" class="saldo-valor">$0</p>
-            <p id="saldo-usuario" class="saldo-usuario">Usuario #—</p>
+            <p id="saldo-usuario" class="saldo-usuario">—</p>
+            <div style="display:flex; gap:16px; margin-top:12px; font-size:13px; color:rgba(255,255,255,.7)">
+              <span>Total: <strong id="saldo-total">$0</strong></span>
+              <span>Retenido: <strong id="saldo-retenido">$0</strong></span>
+            </div>
           </div>
 
           <!-- Formulario de depósito -->

@@ -1,40 +1,48 @@
-# SubastaYa-Front
-Front de Subasta Ya
+# SubastaYa — Frontend
 
-## Cómo probarlo
+## Cómo correrlo
 
-El frontend **no puede abrirse como archivo local** (`file:///...`). Necesita ser servido por un servidor HTTP para poder comunicarse con el backend.
-
-### 1. Levantar el backend
-
-En la carpeta del backend, ejecutar con el perfil HTTP (sin HTTPS redirect en desarrollo):
+El backend sirve el frontend directamente. No hace falta levantar un servidor aparte.
 
 ```bash
+# Desde backend/src/Api
 dotnet run --launch-profile http
 ```
 
-El backend queda disponible en `http://localhost:5073`.
+Abrir en: **`http://localhost:5073`**
 
-### 2. Levantar el frontend
+> No abrir los `.html` como archivo local (doble clic). El browser bloquea las requests desde `file://`.
 
-En la carpeta raíz del frontend:
+---
 
-```bash
-npx serve -l 3000
-```
+## Usuarios de prueba
 
-### 3. Abrir en el browser
+Contraseña de todos: `Password123!`
 
-```
-http://localhost:3000
-```
-
-> **Importante:** No abrir los archivos `.html` directamente con doble clic. El browser bloquea las requests desde `file://` al backend, y el login no funcionará.
-
-### Usuarios de prueba
-
-| Email | Contraseña | Rol |
+| Email | Rol | Qué puede hacer |
 |---|---|---|
-| `vendedor1@test.com` | `Test1234!` | Vendedor |
-| `comprador1@test.com` | `Test1234!` | Comprador |
-| `comprador2@test.com` | `Test1234!` | Comprador |
+| `vendedor@test.com` | Vendedor | Publicar subastas, ver catálogo, cobrar ventas |
+| `comprador1@test.com` | Comprador | Pujar, ver billetera ($150.000 disponibles), mis actividades |
+| `comprador2@test.com` | Comprador | Pujar, ver billetera ($180.500 disponibles), ganó la Bicicleta Fixie |
+| `sinfondos@test.com` | Comprador | Saldo $500 — útil para probar rechazo por fondos insuficientes |
+
+---
+
+## Subastas cargadas (seed)
+
+| Subasta | Estado | Para probar |
+|---|---|---|
+| iPhone 15 Pro Max | ACTIVA | Pujas normales, retención de saldo |
+| Charizard 1ª Edición | ACTIVA (zona crítica) | Anti-sniping (extensión de 2 min) |
+| Chaqueta Vintage Dior | PRÓXIMA (+24 hs) | Subastas bloqueadas para pujas |
+| Bicicleta Fixie Vintage | FINALIZADA | Historial, ganador: comprador2 |
+| Funda Para Laptop | DESIERTA | Subasta sin pujas |
+
+---
+
+## Roles y permisos
+
+**Comprador:** ver catálogo · pujar · billetera · mis actividades  
+**Vendedor:** ver catálogo · publicar subastas · mis actividades · cobrar ventas
+
+> El botón `+ Publicar` solo debería aparecer para Vendedores (fix pendiente).

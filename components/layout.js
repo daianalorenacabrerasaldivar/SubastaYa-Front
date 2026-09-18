@@ -5,7 +5,7 @@
  * modificá SOLO este archivo.
  */
 
-document.addEventListener('DOMContentLoaded', () => {
+function initLayout() {
   const enSubcarpeta = window.location.pathname.includes('/pages/');
   const ROOT = enSubcarpeta ? '../' : './';
 
@@ -24,7 +24,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── Header ──────────────────────────────────────────────
   const headerEl = document.getElementById('app-header');
   if (headerEl) {
-    const nombreUsuario = email || '';
+    const nombre     = localStorage.getItem('subastaYa_nombre') || email || '';
+    const rol        = localStorage.getItem('subastaYa_rol') ?? '';
+    const esVendedor = rol.toLowerCase() === 'vendedor';
 
     headerEl.innerHTML = `
       <header class="main-header">
@@ -41,11 +43,9 @@ document.addEventListener('DOMContentLoaded', () => {
           </nav>
 
           <div class="main-header__actions">
-            <a href="${ROOT}pages/create-auction.html" class="btn btn-primary btn-sm">
-              + Publicar
-            </a>
+            ${esVendedor ? `<a href="${ROOT}pages/create-auction.html" class="btn btn-primary btn-sm">+ Publicar</a>` : ''}
             <div class="header-usuario">
-              <span class="header-usuario__email" title="${nombreUsuario}">${nombreUsuario}</span>
+              <span class="header-usuario__email" title="${email}">${nombre}</span>
               <button class="btn btn-secondary btn-sm" id="btn-salir">Salir</button>
             </div>
           </div>
@@ -60,9 +60,9 @@ document.addEventListener('DOMContentLoaded', () => {
           <a href="${ROOT}index.html">Subastas</a>
           <a href="${ROOT}pages/wallet.html">Billetera</a>
           <a href="${ROOT}pages/user-activity.html">Mis actividades</a>
-          <a href="${ROOT}pages/create-auction.html">Publicar subasta</a>
+          ${esVendedor ? `<a href="${ROOT}pages/create-auction.html">Publicar subasta</a>` : ''}
           <hr style="border-color:rgba(255,255,255,.1); margin:8px 0">
-          <span style="font-size:13px; color:rgba(255,255,255,.5); padding:4px 0">${nombreUsuario}</span>
+          <span style="font-size:13px; color:rgba(255,255,255,.5); padding:4px 0">${nombre}</span>
           <button class="btn btn-secondary btn-sm" id="btn-salir-mobile" style="margin-top:4px; width:100%; justify-content:center">
             Salir
           </button>
@@ -104,4 +104,10 @@ document.addEventListener('DOMContentLoaded', () => {
       </footer>
     `;
   }
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initLayout);
+} else {
+  initLayout();
+}

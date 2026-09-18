@@ -37,9 +37,14 @@
 
       <form id="form-identificacion" class="id-form" novalidate>
         <div class="form-group">
-          <label class="form-label" for="input-email">Tu email</label>
+          <label class="form-label" for="input-email">Email</label>
           <input id="input-email" type="email" class="form-control"
                  placeholder="nombre@ejemplo.com" autocomplete="email" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="input-password">Contraseña</label>
+          <input id="input-password" type="password" class="form-control"
+                 placeholder="Tu contraseña" autocomplete="current-password" required>
         </div>
         <div id="alerta-id"></div>
         <button id="btn-entrar" type="submit" class="btn btn-primary btn-full">
@@ -121,34 +126,40 @@
         btnEntrar.disabled    = true;
         btnEntrar.textContent = 'Verificando…';
 
+        const passVal = document.getElementById('input-password').value;
+        if (!passVal) {
+          alertaEl.innerHTML = '<div class="alerta alerta-error">Ingresá tu contraseña.</div>';
+          btnEntrar.disabled    = false;
+          btnEntrar.textContent = 'Ingresar →';
+          return;
+        }
+
         try {
-          console.log('[SubastaYa] Buscando usuario:', emailVal);
           const apiBase = window.location.port === '5073' ? '' : 'http://localhost:5073';
-          const res = await fetch(
-            `${apiBase}/api/v1/users?email=${encodeURIComponent(emailVal)}`,
-            { signal: AbortSignal.timeout(5000) }
-          );
-          console.log('[SubastaYa] Respuesta HTTP:', res.status);
+          const res = await fetch(`${apiBase}/api/v1/auth/login`, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ email: emailVal, password: passVal }),
+            signal:  AbortSignal.timeout(5000)
+          });
 
-          if (!res.ok) throw new Error('not_found');
-          const usuario = await res.json();
-          console.log('[SubastaYa] Usuario encontrado:', usuario);
+          if (!res.ok) throw new Error('credenciales');
+          const session = await res.json();
 
-          const u = Array.isArray(usuario) ? usuario[0] : usuario;
-          if (!u) throw new Error('not_found');
-
-          localStorage.setItem('subastaYa_email',  u.email ?? emailVal);
-          localStorage.setItem('subastaYa_userId', String(u.id));
+          localStorage.setItem('subastaYa_userId', String(session.usuarioId));
+          localStorage.setItem('subastaYa_email',  session.email);
+          localStorage.setItem('subastaYa_nombre', session.nombre);
+          localStorage.setItem('subastaYa_token',  session.token);
+          localStorage.setItem('subastaYa_rol',    session.rol);
 
           document.getElementById('pantalla-identificacion').hidden = true;
           mostrarCatalogo();
 
         } catch (err) {
-          console.error('[SubastaYa] Error al identificar:', err.name, err.message);
           const esComunicacion = err.name === 'TimeoutError' || err.name === 'TypeError';
           alertaEl.innerHTML = esComunicacion
             ? '<div class="alerta alerta-error">No se pudo conectar con el servidor. ¿Está corriendo el backend?</div>'
-            : '<div class="alerta alerta-error">No encontramos un usuario con ese email.</div>';
+            : '<div class="alerta alerta-error">Email o contraseña incorrectos.</div>';
           btnEntrar.disabled    = false;
           btnEntrar.textContent = 'Ingresar →';
         }

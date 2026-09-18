@@ -22,8 +22,7 @@
       <span class="id-logo">🏷️</span>
       <h1 class="id-titulo">Subasta<span>Ya</span></h1>
       <p class="id-subtitulo">
-        Plataforma de subastas en línea en tiempo real.<br>
-        Identificate para continuar a la demo.
+        Plataforma de subastas en línea en tiempo real.
       </p>
 
       <div class="modulos-lista">
@@ -42,15 +41,9 @@
           <input id="input-email" type="email" class="form-control"
                  placeholder="nombre@ejemplo.com" autocomplete="email" required>
         </div>
-        <div class="form-group">
-          <label class="form-label" for="input-id">Tu número de usuario</label>
-          <input id="input-id" type="number" min="1" class="form-control"
-                 placeholder="Ej: 3" required>
-          <span class="form-hint">El ID con el que estás registrado en el sistema.</span>
-        </div>
         <div id="alerta-id"></div>
         <button id="btn-entrar" type="submit" class="btn btn-primary btn-full">
-          Entrar a la demo →
+          Ingresar →
         </button>
       </form>
     </div>
@@ -117,19 +110,13 @@
         alertaEl.innerHTML = '';
 
         const emailVal = document.getElementById('input-email').value.trim();
-        const id       = Number(document.getElementById('input-id').value);
 
         if (!emailVal || !emailVal.includes('@')) {
           alertaEl.innerHTML = '<div class="alerta alerta-error">Ingresá un email válido.</div>';
           return;
         }
-        if (!id || id <= 0) {
-          alertaEl.innerHTML = '<div class="alerta alerta-error">Ingresá tu número de usuario.</div>';
-          return;
-        }
 
-        localStorage.setItem('subastaYa_email',  emailVal);
-        localStorage.setItem('subastaYa_userId', String(id));
+        localStorage.setItem('subastaYa_email', emailVal);
 
         document.getElementById('pantalla-identificacion').hidden = true;
         mostrarCatalogo();

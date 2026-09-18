@@ -1,8 +1,12 @@
 # SubastaYa — Frontend
 
+Interfaz de usuario en Vanilla JS (ES modules) servida directamente por el backend.
+
+---
+
 ## Cómo correrlo
 
-El backend sirve el frontend directamente. No hace falta levantar un servidor aparte.
+El backend sirve el frontend. No hace falta levantar un servidor aparte.
 
 ```bash
 # Desde backend/src/Api
@@ -15,34 +19,60 @@ Abrir en: **`http://localhost:5073`**
 
 ---
 
+## Autenticación
+
+El login usa `POST /api/v1/auth/login` (email + contraseña). Al ingresar, la sesión queda guardada en `localStorage`:
+
+| Clave | Contenido |
+|---|---|
+| `subastaYa_userId` | ID numérico del usuario |
+| `subastaYa_email` | Email |
+| `subastaYa_nombre` | Nombre completo |
+| `subastaYa_token` | JWT Bearer |
+| `subastaYa_rol` | `Comprador` o `Vendedor` |
+
+Para cerrar sesión basta con limpiar el `localStorage`.
+
+---
+
 ## Usuarios de prueba
 
 Contraseña de todos: `Password123!`
 
-| Email | Rol | Qué puede hacer |
-|---|---|---|
-| `vendedor@test.com` | Vendedor | Publicar subastas, ver catálogo, cobrar ventas |
-| `comprador1@test.com` | Comprador | Pujar, ver billetera ($150.000 disponibles), mis actividades |
-| `comprador2@test.com` | Comprador | Pujar, ver billetera ($180.500 disponibles), ganó la Bicicleta Fixie |
-| `sinfondos@test.com` | Comprador | Saldo $500 — útil para probar rechazo por fondos insuficientes |
+| Email | Rol | Saldo disponible | Notas |
+|---|---|---|---|
+| `vendedor@test.com` | Vendedor | $7.500 | Publicó las 5 subastas del seed |
+| `comprador1@test.com` | Comprador | $105.000 | Postor líder en iPhone ($45.000 retenidos) |
+| `comprador2@test.com` | Comprador | $180.500 | Ganó la Bicicleta Fixie; $12.000 retenidos en Charizard |
+| `sinfondos@test.com` | Comprador | $500 | Para probar rechazo por fondos insuficientes |
 
 ---
 
 ## Subastas cargadas (seed)
 
-| Subasta | Estado | Para probar |
+Las fechas son relativas al momento en que se ejecutó el seeder por primera vez.
+
+| Subasta | Estado inicial | Para probar |
 |---|---|---|
-| iPhone 15 Pro Max | ACTIVA | Pujas normales, retención de saldo |
-| Charizard 1ª Edición | ACTIVA (zona crítica) | Anti-sniping (extensión de 2 min) |
+| iPhone 15 Pro Max | ACTIVA (cierra ~25 min) | Pujas normales, retención de saldo |
+| Charizard 1ª Edición | ACTIVA (cierra ~90 s) | Anti-sniping: extensión automática de +2 min |
 | Chaqueta Vintage Dior | PRÓXIMA (+24 hs) | Subastas bloqueadas para pujas |
 | Bicicleta Fixie Vintage | FINALIZADA | Historial, ganador: comprador2 |
 | Funda Para Laptop | DESIERTA | Subasta sin pujas |
+
+> Si todas las activas ya vencieron, podés reiniciar el seed borrando la BD y corriendo `dotnet ef database update` desde `backend/src/Api`.
 
 ---
 
 ## Roles y permisos
 
-**Comprador:** ver catálogo · pujar · billetera · mis actividades  
-**Vendedor:** ver catálogo · publicar subastas · mis actividades · cobrar ventas
+| Acción | Comprador | Vendedor |
+|---|---|---|
+| Ver catálogo | ✓ | ✓ |
+| Ver detalle de subasta | ✓ | ✓ |
+| Pujar | ✓ | ✗ |
+| Publicar subasta | ✗ | ✓ |
+| Billetera (saldo + depósito) | ✓ | ✓ |
+| Mis actividades | ✓ | ✓ |
 
-> El botón `+ Publicar` solo debería aparecer para Vendedores (fix pendiente).
+El botón `+ Publicar` solo aparece para usuarios con rol `Vendedor`.

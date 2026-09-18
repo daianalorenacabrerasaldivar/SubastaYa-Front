@@ -104,22 +104,50 @@
     } else {
       document.getElementById('pantalla-identificacion').hidden = false;
 
-      document.getElementById('form-identificacion').addEventListener('submit', e => {
+      const formEl    = document.getElementById('form-identificacion');
+      const btnEntrar = document.getElementById('btn-entrar');
+
+      formEl.addEventListener('submit', async e => {
         e.preventDefault();
-        const alertaEl  = document.getElementById('alerta-id');
+        const alertaEl = document.getElementById('alerta-id');
         alertaEl.innerHTML = '';
 
         const emailVal = document.getElementById('input-email').value.trim();
-
         if (!emailVal || !emailVal.includes('@')) {
           alertaEl.innerHTML = '<div class="alerta alerta-error">Ingresá un email válido.</div>';
           return;
         }
 
-        localStorage.setItem('subastaYa_email', emailVal);
+        btnEntrar.disabled    = true;
+        btnEntrar.textContent = 'Verificando…';
 
-        document.getElementById('pantalla-identificacion').hidden = true;
-        mostrarCatalogo();
+        try {
+          const res = await fetch(
+            `http://localhost:5073/api/v1/users?email=${encodeURIComponent(emailVal)}`,
+            { signal: AbortSignal.timeout(8000) }
+          );
+
+          if (!res.ok) throw new Error('not_found');
+          const usuario = await res.json();
+
+          // Puede venir como array o como objeto directo
+          const u = Array.isArray(usuario) ? usuario[0] : usuario;
+          if (!u) throw new Error('not_found');
+
+          localStorage.setItem('subastaYa_email',  u.email ?? emailVal);
+          localStorage.setItem('subastaYa_userId', String(u.id));
+
+          document.getElementById('pantalla-identificacion').hidden = true;
+          mostrarCatalogo();
+
+        } catch (err) {
+          const esComunicacion = err.name === 'TimeoutError' || err.name === 'TypeError';
+          alertaEl.innerHTML = esComunicacion
+            ? '<div class="alerta alerta-error">No se pudo conectar con el servidor.</div>'
+            : '<div class="alerta alerta-error">No encontramos un usuario con ese email.</div>';
+          btnEntrar.disabled    = false;
+          btnEntrar.textContent = 'Ingresar →';
+        }
       });
     }
   </script>
